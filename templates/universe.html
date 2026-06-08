@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-hero section" id="universe-hero">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Вселенная</span>
+            <h1 class="section-title">О вселенной Warhammer 40,000</h1>
+            <div class="section-divider">✧</div>
+        </div>
+    </div>
+</section>
+
+<section class="universe-content section">
+    <div class="container">
+        {% for paragraph in paragraphs %}
+        <div class="universe-paragraph reveal">
+            <p>{{ paragraph }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="universe-stats section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item reveal">
+                <div class="stat-number" data-target="1000000">0</div>
+                <div class="stat-label">Миров в Империуме</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-target="10000">0</div>
+                <div class="stat-label">Лет истории</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-target="20">0</div>
+                <div class="stat-label">Легионов Астартес</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number" data-target="1000">0</div>
+                <div class="stat-label">Орденов космодесанта</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="universe-quote section">
+    <div class="container">
+        <div class="quote-block reveal">
+            <div class="quote-mark">❝</div>
+            <blockquote>
+                В мрачной тьме далёкого будущего есть только война.
+            </blockquote>
+            <cite>— Цитата из кодексов Warhammer 40,000</cite>
+        </div>
+    </div>
+</section>
+{% endblock %}

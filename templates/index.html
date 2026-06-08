@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero" id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="hero-badge">ВСЕЛЕННАЯ ВЕЧНОЙ ВОЙНЫ</div>
+        <h1 class="hero-title reveal-text">WARHAMMER <span class="gold-text">40,000</span></h1>
+        <p class="hero-subtitle">Сорок первое тысячелетие. Галактика пылает в огне бесконечной войны. Человечество сражается за выживание против бесчисленных врагов. Добро пожаловать в мрачное будущее, где нет мира.</p>
+        <div class="hero-buttons">
+            <a href="/universe" class="btn btn-primary pulse-animation">Погрузиться во вселенную</a>
+            <a href="/factions" class="btn btn-secondary">Фракции</a>
+        </div>
+        <div class="hero-scroll">
+            <span>Листай вниз</span>
+            <div class="scroll-arrow">↓</div>
+        </div>
+    </div>
+    <div class="hero-stars"></div>
+</section>
+
+<section class="featured-section section" id="about-preview">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Империум Человечества</span>
+            <h2 class="section-title">Тьма сорок первого тысячелетия</h2>
+            <div class="section-divider">✧</div>
+            <p class="section-desc">В галактике, где правит бесконечная война, лишь Империум стоит на страже человечества. Но даже его свет начинает угасать...</p>
+        </div>
+        <div class="about-grid">
+            <div class="about-card reveal" style="transition-delay: 0.1s">
+                <div class="about-icon">🏛️</div>
+                <h3>Готический Империум</h3>
+                <p>Миллионы миров под властью Бога-Императора. Бюрократия, фанатизм и вечная война — основа существования человечества.</p>
+            </div>
+            <div class="about-card reveal" style="transition-delay: 0.2s">
+                <div class="about-icon">🔥</div>
+                <h3>Варп и Хаос</h3>
+                <p>Паранормальное измерение, отражающее эмоции всех живых существ. Источник величайшей опасности и единственный способ путешествовать между звёздами.</p>
+            </div>
+            <div class="about-card reveal" style="transition-delay: 0.3s">
+                <div class="about-icon">⚔️</div>
+                <h3>Космические десантники</h3>
+                <p>Элитные воины Империума, генетически модифицированные сверхлюди. Каждый из них стоит тысячи обычных солдат.</p>
+            </div>
+        </div>
+        <div class="section-center reveal">
+            <a href="/universe" class="btn btn-link">Узнать больше →</a>
+        </div>
+    </div>
+</section>
+
+<section class="factions-preview section" id="factions-preview">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Фракции</span>
+            <h2 class="section-title">Силы, правящие галактикой</h2>
+            <div class="section-divider">✧</div>
+        </div>
+        <div class="factions-grid">
+            {% for faction in factions %}
+            <div class="faction-card reveal" style="transition-delay: {{ '0.1' if loop.index == 1 else '0.2' if loop.index == 2 else '0.3' }}s">
+                <div class="faction-card-inner">
+                    <div class="faction-card-front">
+                        <div class="faction-icon">{{ faction.icon }}</div>
+                        <h3>{{ faction.name }}</h3>
+                        <p>{{ faction.title }}</p>
+                    </div>
+                    <div class="faction-card-back">
+                        <p>{{ faction.desc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-center reveal">
+            <a href="/factions" class="btn btn-primary">Все фракции</a>
+        </div>
+    </div>
+</section>
+
+<section class="characters-preview section" id="characters-preview">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Легенды</span>
+            <h2 class="section-title">Герои и злодеи эпохи</h2>
+            <div class="section-divider">✧</div>
+        </div>
+        <div class="characters-grid">
+            {% for character in characters %}
+            <div class="character-card reveal" style="transition-delay: {{ '0.1' if loop.index == 1 else '0.2' if loop.index == 2 else '0.3' }}s">
+                <div class="character-rank">{{ character.title }}</div>
+                <h3 class="character-name">{{ character.name }}</h3>
+                <p class="character-desc">{{ character.desc[:100] + '...' if character.desc|length > 100 else character.desc }}</p>
+                <div class="character-quote">«{{ character.quote }}»</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-center reveal">
+            <a href="/characters" class="btn btn-link">Все персонажи →</a>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section section" id="cta">
+    <div class="container">
+        <div class="cta-content reveal">
+            <h2 class="cta-title">Готов узнать больше?</h2>
+            <p class="cta-text">Погрузись в мрачное будущее, где только война имеет значение. Изучи хронологию событий, фракции и легендарных героев вселенной Warhammer 40,000.</p>
+            <div class="cta-buttons">
+                <a href="/timeline" class="btn btn-primary">Хронология</a>
+                <a href="/gallery" class="btn btn-secondary">Галерея</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

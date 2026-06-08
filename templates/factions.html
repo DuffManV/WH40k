@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-hero section" id="factions-hero">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Фракции</span>
+            <h1 class="section-title">Силы галактики</h1>
+            <div class="section-divider">✧</div>
+            <p class="section-desc">В галактике Warhammer 40,000 множество фракций и рас ведут бесконечную войну за выживание и господство. Каждая из них уникальна и смертельно опасна.</p>
+        </div>
+    </div>
+</section>
+
+<section class="factions-full section">
+    <div class="container">
+        <div class="factions-grid-full">
+            {% for faction in factions %}
+            <div class="faction-full-card reveal">
+                <div class="faction-full-header" style="background: linear-gradient(135deg, {{ faction.colors.split(',')[0] }}33, {{ faction.colors.split(',')[1] }}22), var(--bg-dark);">
+                    <div class="faction-full-icon">{{ faction.icon }}</div>
+                    <h2 class="faction-full-name">{{ faction.name }}</h2>
+                    <div class="faction-full-title">{{ faction.title }}</div>
+                </div>
+                <div class="faction-full-body">
+                    <p>{{ faction.desc }}</p>
+                </div>
+                <div class="faction-full-footer">
+                    <span class="faction-color-dot" style="background: {{ faction.colors.split(',')[0] }}"></span>
+                    <span class="faction-color-dot" style="background: {{ faction.colors.split(',')[1] }}"></span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

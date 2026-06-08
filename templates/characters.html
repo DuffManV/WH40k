@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-hero section" id="characters-hero">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Персонажи</span>
+            <h1 class="section-title">Легендарные герои и злодеи</h1>
+            <div class="section-divider">✧</div>
+            <p class="section-desc">В галактике Warhammer 40,000 есть личности, чьи деяния изменили ход истории. От богоподобных примархов до падших владык Хаоса — каждый из них оставил неизгладимый след.</p>
+        </div>
+    </div>
+</section>
+
+<section class="characters-full section">
+    <div class="container">
+        <div class="characters-list">
+            {% for character in characters %}
+            <div class="character-full-card reveal">
+                <div class="character-full-rank">{{ character.title }}</div>
+                <div class="character-full-body">
+                    <div class="character-full-icon">
+                        <span class="char-icon-placeholder">{{ ['👑', '⚡', '🛡️', '💀', '🔮', '💥'][loop.index0] }}</span>
+                    </div>
+                    <div class="character-full-info">
+                        <h2 class="character-full-name">{{ character.name }}</h2>
+                        <p class="character-full-desc">{{ character.desc }}</p>
+                        <div class="character-full-quote">
+                            <span class="quote-icon">❝</span>
+                            {{ character.quote }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

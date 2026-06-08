@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-hero section" id="gallery-hero">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Галерея</span>
+            <h1 class="section-title">Визуальный архив</h1>
+            <div class="section-divider">✧</div>
+            <p class="section-desc">Величайшие битвы, величайшие герои и самые тёмные уголки галактики Warhammer 40,000.</p>
+        </div>
+    </div>
+</section>
+
+<section class="gallery-section section">
+    <div class="container">
+        <div class="gallery-grid">
+            {% for item in items %}
+            <div class="gallery-item reveal">
+                <div class="gallery-placeholder" style="background: linear-gradient(135deg, 
+                    {% if loop.index == 1 %}#1a0a2e,#16213e{% elif loop.index == 2 %}#2a0a0a,#3e1a1a{% elif loop.index == 3 %}#0a1a0a,#1a2a1a{% elif loop.index == 4 %}#2a0a2e,#1a0a2a{% elif loop.index == 5 %}#1a1a2a,#0a0a1a{% else %}#2a1a0a,#1a1a0a{% endif %});">
+                    <div class="gallery-icon">
+                        {% if loop.index == 1 %}⚔️{% elif loop.index == 2 %}👑{% elif loop.index == 3 %}🛡️{% elif loop.index == 4 %}👁️{% elif loop.index == 5 %}⚙️{% else %}🐺{% endif %}
+                    </div>
+                    <div class="gallery-overlay">
+                        <h3>{{ item.title }}</h3>
+                    </div>
+                    <div class="gallery-glare"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

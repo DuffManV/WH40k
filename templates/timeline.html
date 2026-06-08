@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-hero section" id="timeline-hero">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">История</span>
+            <h1 class="section-title">Хронология событий</h1>
+            <div class="section-divider">✧</div>
+            <p class="section-desc">От восхождения человечества до Эры Неспокойствия — проследите путь галактики сквозь десять тысяч лет войны и страданий.</p>
+        </div>
+    </div>
+</section>
+
+<section class="timeline-section section">
+    <div class="container">
+        <div class="timeline">
+            {% for event in events %}
+            <div class="timeline-item reveal {% if loop.index % 2 == 0 %}timeline-right{% else %}timeline-left{% endif %}">
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year">{{ event.year }}</div>
+                    <h3 class="timeline-title">{{ event.title }}</h3>
+                    <p class="timeline-desc">{{ event.desc }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warhammer 40,000 — Во Вселенной Вечной Войны</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">☠️</span>
+                <span class="logo-text">WARHAMMER <span class="logo-digit">40,000</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link" data-page="index">Главная</a></li>
+                <li><a href="/universe" class="nav-link" data-page="universe">О вселенной</a></li>
+                <li><a href="/factions" class="nav-link" data-page="factions">Фракции</a></li>
+                <li><a href="/characters" class="nav-link" data-page="characters">Персонажи</a></li>
+                <li><a href="/timeline" class="nav-link" data-page="timeline">Хронология</a></li>
+                <li><a href="/gallery" class="nav-link" data-page="gallery">Галерея</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-symbol">☠️⚔️☠️</div>
+            <p class="footer-text">Warhammer 40,000 — вселенная вечной войны</p>
+            <p class="footer-copy">Вся информация представлена в ознакомительных целях. Warhammer 40,000 © Games Workshop Limited.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
