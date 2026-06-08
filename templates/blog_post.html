@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero section admin-page-head">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Блог</span>
+            <h1 class="section-title">{{ post.title }}</h1>
+            <div class="section-divider">✧</div>
+        </div>
+    </div>
+</section>
+<section class="section section-compact">
+    <div class="container reveal content-narrow">
+        <div class="post-meta">
+            {{ post.created_at[:10] }} • Автор: {{ post.author }}
+        </div>
+        <div class="post-content">{{ post.content }}</div>
+        <div class="post-footer">
+            <a href="{{ url_for('blog') }}" class="btn btn-secondary pagination-nav">← Все записи</a>
+            {% if session.get('admin_logged_in') %}
+            <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" class="btn btn-ghost">Редактировать</a>
+            <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" class="form-inline" onsubmit="return confirm('Удалить пост?')">
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

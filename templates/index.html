@@ -28,17 +28,17 @@
             <p class="section-desc">В галактике, где правит бесконечная война, лишь Империум стоит на страже человечества. Но даже его свет начинает угасать...</p>
         </div>
         <div class="about-grid">
-            <div class="about-card reveal" style="transition-delay: 0.1s">
+            <div class="about-card reveal delay-1">
                 <div class="about-icon">🏛️</div>
                 <h3>Готический Империум</h3>
                 <p>Миллионы миров под властью Бога-Императора. Бюрократия, фанатизм и вечная война — основа существования человечества.</p>
             </div>
-            <div class="about-card reveal" style="transition-delay: 0.2s">
+            <div class="about-card reveal delay-2">
                 <div class="about-icon">🔥</div>
                 <h3>Варп и Хаос</h3>
                 <p>Паранормальное измерение, отражающее эмоции всех живых существ. Источник величайшей опасности и единственный способ путешествовать между звёздами.</p>
             </div>
-            <div class="about-card reveal" style="transition-delay: 0.3s">
+            <div class="about-card reveal delay-3">
                 <div class="about-icon">⚔️</div>
                 <h3>Космические десантники</h3>
                 <p>Элитные воины Империума, генетически модифицированные сверхлюди. Каждый из них стоит тысячи обычных солдат.</p>
@@ -59,7 +59,7 @@
         </div>
         <div class="factions-grid">
             {% for faction in factions %}
-            <div class="faction-card reveal" style="transition-delay: {{ '0.1' if loop.index == 1 else '0.2' if loop.index == 2 else '0.3' }}s">
+            <div class="faction-card reveal delay-{{ '1' if loop.index == 1 else '2' if loop.index == 2 else '3' }}">
                 <div class="faction-card-inner">
                     <div class="faction-card-front">
                         <div class="faction-icon">{{ faction.icon }}</div>
@@ -88,7 +88,7 @@
         </div>
         <div class="characters-grid">
             {% for character in characters %}
-            <div class="character-card reveal" style="transition-delay: {{ '0.1' if loop.index == 1 else '0.2' if loop.index == 2 else '0.3' }}s">
+            <div class="character-card reveal delay-{{ '1' if loop.index == 1 else '2' if loop.index == 2 else '3' }}">
                 <div class="character-rank">{{ character.title }}</div>
                 <h3 class="character-name">{{ character.name }}</h3>
                 <p class="character-desc">{{ character.desc[:100] + '...' if character.desc|length > 100 else character.desc }}</p>

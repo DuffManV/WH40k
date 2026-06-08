@@ -1,162 +1,228 @@
-from flask import Flask, render_template
+import json
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from functools import wraps
+from werkzeug.security import check_password_hash
+from database import get_db, init_db
+from gigachat_service import generate_post, generate_mock_post, get_available_topics, is_configured
 
 app = Flask(__name__)
+app.secret_key = 'wh40k-secret-key-2026'
 
-factions_data = [
-    {
-        "id": "imperium",
-        "name": "Империум Человечества",
-        "title": "Во имя Императора",
-        "desc": "Галактическая империя людей, возглавляемая бессмертным Богом-Императором. Погрязшая в бюрократии и суевериях, эта махина ежедневно сражается за выживание человечества против бесчисленных врагов.",
-        "colors": "#8B0000,#FFD700",
-        "icon": "⚔️"
-    },
-    {
-        "id": "chaos",
-        "name": "Хаос",
-        "title": "Во имя Тёмных Богов",
-        "desc": "Предавшие Императора легионы космических десантников, посвятившие себя тёмным богам Варпа. Хаос — это не просто враг, это зеркальное отражение тёмной стороны души каждого человека.",
-        "colors": "#4B0082,#FF0000",
-        "icon": "👹"
-    },
-    {
-        "id": "orks",
-        "name": "Орки",
-        "title": "WAAAGH!",
-        "desc": "Зелёные орды грубой силы и технологического хаоса. Орки существуют только для войны и размножаются спорами. Чем больше орков собирается вместе, тем сильнее и умнее они становятся.",
-        "colors": "#2E8B57,#8B0000",
-        "icon": "💀"
-    },
-    {
-        "id": "eldar",
-        "name": "Эльдары",
-        "title": "Древняя раса",
-        "desc": "Некогда могущественная цивилизация, ныне находящаяся на грани вымирания. Эльдары используют свои психические способности и продвинутые технологии, чтобы выжить в галактике, полной варваров.",
-        "colors": "#006400,#C0C0C0",
-        "icon": "🧝"
-    },
-    {
-        "id": "tyranids",
-        "name": "Тиранниды",
-        "title": "Пожиратели миров",
-        "desc": "Внегалактический рой, пожирающий всё живое на своём пути. Тиранниды — это единый коллективный разум, направляющий бесчисленные биоморфные формы жизни для поглощения всей биомассы галактики.",
-        "colors": "#800080,#00FF00",
-        "icon": "🐛"
-    },
-    {
-        "id": "tau",
-        "name": "Тау",
-        "title": "За высшее благо",
-        "desc": "Молодая и быстро развивающаяся цивилизация, объединяющая множество рас под знаменем «Высшего Блага». Тау верят в прогресс, науку и единство, но их экспансия встречает сопротивление по всей галактике.",
-        "colors": "#1E90FF,#FFFAFA",
-        "icon": "🔱"
-    },
-    {
-        "id": "necrons",
-        "name": "Некроны",
-        "title": "Пробуждение древних",
-        "desc": "Древняя раса живых металлических скелетов, пробудившаяся после миллионов лет сна. Некроны обладают технологией, превосходящей всё, что существует в галактике, и стремятся вернуть былое величие.",
-        "colors": "#006400,#00FF00",
-        "icon": "⚰️"
-    }
-]
+init_db()
 
-characters_data = [
-    {
-        "id": "emperor",
-        "name": "Бог-Император",
-        "title": "Владыка Человечества",
-        "desc": "Бессмертный повелитель человечества, заключённый в Золотом Троне после предательства Хоруса. Его воля и психическая мощь удерживают галактику от полного погружения в хаос уже десять тысячелетий.",
-        "quote": "Смерть — это ещё не конец."
-    },
-    {
-        "id": "horus",
-        "name": "Хорус Луперкаль",
-        "title": "Архипредатель",
-        "desc": "Величайший из примархов и самый любимый сын Императора. Хорус пал под влиянием Хаоса и развязал гражданскую войну, едва не уничтожившую Империум. Его имя стало синонимом предательства.",
-        "quote": "Нет силы более могущественной, чем преданность. И нет греха более тяжкого, чем предательство."
-    },
-    {
-        "id": "calgar",
-        "name": "Марнеус Калгар",
-        "title": "Магистр Ордена Ультрамаринов",
-        "desc": "Верховный магистр ордена Ультрамаринов и один из величайших воинов Империума. Калгар — воплощение доблести и чести космодесанта, непримиримый враг Хаоса и защитник человечества.",
-        "quote": "Честь — это не награда, а бремя."
-    },
-    {
-        "id": "abbadon",
-        "name": "Аббадон Разоритель",
-        "title": "Владыка Чёрного Легиона",
-        "desc": "Наследник Хоруса и величайший из военачальников Хаоса. Аббадон возглавил тринадцать Чёрных Крестовых Походов против Империума, едва не сокрушив оплот человечества.",
-        "quote": "Империум падёт. Вопрос лишь во времени."
-    },
-    {
-        "id": "yvraine",
-        "name": "Иврайн",
-        "title": "Пророчица Йннеада",
-        "desc": "Возродившая древний культ Йннеада — бога мёртвых эльдаров. Иврайн привела свой народ к новой надежде, пробудив Йннеада и начав новую эру для эльдарской расы.",
-        "quote": "Даже в смерти есть жизнь."
-    },
-    {
-        "id": "ghazghkull",
-        "name": "Газгкулл Маг Урук-Траг",
-        "title": "Верховный Вождь Орков",
-        "desc": "Величайший из орков, собравший крупнейшую орду со времён Войны Зверя. Газгкулл объединил бесчисленные кланы орков под своим знаменем и ведёт их к величайшей WAAAGH! в истории.",
-        "quote": "WAAAGH!"
-    }
-]
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated
 
-timeline_data = [
-    {"year": "M15 - M25", "title": "Эпоха Становления", "desc": "Рождение человечества и его экспансия по галактике. Создание первых человеческих колоний и начало Золотого века технологий."},
-    {"year": "M25 - M30", "title": "Эпоха Раздора", "desc": "Крушение человеческой цивилизации после восстания машин. Варп-бури отрезали колонии друг от друга. Человечество погрузилось в хаос и варварство."},
-    {"year": "M30 - M31", "title": "Великий Крестовый Поход", "desc": "Император объединяет человечество, создаёт Легионы Астартес из генетического материала двадцати примархов и начинает завоевание галактики."},
-    {"year": "007.M31", "title": "Ересь Хоруса", "desc": "Хорус Луперкаль, самый любимый сын Императора, предаёт отца и обращается к Хаосу. Начинается гражданская война, расколовшая Империум."},
-    {"year": "014.M31", "title": "Осада Терры", "desc": "Силы Хаоса под предводительством Хоруса атакуют Святую Терру. Император вступает в финальный бой с Хорусом и погибает, но уничтожает предателя."},
-    {"year": "M32 - M41", "title": "Эпоха Империума", "desc": "Десять тысячелетий войны и экспансии. Империум погрязает в фанатизме и бюрократии, но продолжает сражаться за выживание человечества."},
-    {"year": "999.M41", "title": "Пробуждение Роя", "desc": "Тиранниды атакуют Империум в секторе Ультрамар. Битва при Макрагге становится одним из величайших сражений в истории человечества."},
-    {"year": "M42", "title": "Эра Неспокойствия", "desc": "Галактика разрывается на части. Пробуждение Некронов, падение Кадии, рождение Великого Разлома и появление Примарха Робаута Жиллимана."}
-]
-
-gallery_items = [
-    {"url": "/static/images/gallery_1.jpg", "title": "Битва на Макрагге"},
-    {"url": "/static/images/gallery_2.jpg", "title": "Золотой Трон"},
-    {"url": "/static/images/gallery_3.jpg", "title": "Легионы Астартес"},
-    {"url": "/static/images/gallery_4.jpg", "title": "Око Ужаса"},
-    {"url": "/static/images/gallery_5.jpg", "title": "Имперские рыцари"},
-    {"url": "/static/images/gallery_6.jpg", "title": "Космические волки"}
-]
-
-paragraphs = [
-    "Сорок первое тысячелетие. Галактика охвачена бесконечной войной. Человечество, разбросанное по миллионам миров, ведёт отчаянную борьбу за выживание под знаменем Империума — единственной надежды в мире, где тьма сгущается с каждым днём.",
-    "Империум Человечества — это галактическая империя, управляемая с Терры некогда величайшим из людей — Бессмертным Богом-Императором. Десять тысяч лет он восседает на Золотом Троне, поддерживая Астрономикон — маяк, позволяющий совершать варп-путешествия через бездну космоса.",
-    "Но Империум — лишь одна из многих сил, претендующих на власть над галактикой. Орды Хаоса, ведомые тёмными богами Варпа, стремятся поглотить всё живое. Рои Тираннидов приходят из-за пределов известного пространства, пожирая целые миры.",
-    "Древние Некроны пробуждаются от миллионов лет сна, чтобы вернуть своё былое величие. Орки — воплощение грубой силы и хаотичной технологии — собираются в огромные орды. Эльдары, некогда величайшая цивилизация, ныне сражаются за выживание.",
-    "Это история о чести и предательстве, о героизме и отчаянии. История о вселенной, где нет места слабости, где каждый день — это битва, а каждая победа — лишь отсрочка неизбежного конца. Добро пожаловать в Warhammer 40,000."
-]
+@app.context_processor
+def inject_globals():
+    db = get_db()
+    recent_posts = db.execute(
+        "SELECT id, title, created_at FROM blog_posts ORDER BY created_at DESC LIMIT 5"
+    ).fetchall()
+    db.close()
+    return {'recent_blog_posts': recent_posts}
 
 @app.route('/')
 def index():
-    return render_template('index.html', factions=factions_data[:3], characters=characters_data[:3])
+    db = get_db()
+    factions = db.execute("SELECT * FROM factions LIMIT 3").fetchall()
+    characters = db.execute("SELECT * FROM characters LIMIT 3").fetchall()
+    db.close()
+    return render_template('index.html', factions=factions, characters=characters)
 
 @app.route('/universe')
 def universe():
-    return render_template('universe.html', paragraphs=paragraphs)
+    db = get_db()
+    paragraphs = db.execute("SELECT content FROM universe_paragraphs ORDER BY ord").fetchall()
+    db.close()
+    return render_template('universe.html', paragraphs=[p['content'] for p in paragraphs])
 
 @app.route('/factions')
 def factions():
-    return render_template('factions.html', factions=factions_data)
+    db = get_db()
+    factions = db.execute("SELECT * FROM factions").fetchall()
+    db.close()
+    return render_template('factions.html', factions=factions)
 
 @app.route('/characters')
 def characters():
-    return render_template('characters.html', characters=characters_data)
+    db = get_db()
+    characters = db.execute("SELECT * FROM characters").fetchall()
+    db.close()
+    return render_template('characters.html', characters=characters)
 
 @app.route('/timeline')
 def timeline():
-    return render_template('timeline.html', events=timeline_data)
+    db = get_db()
+    events = db.execute("SELECT * FROM timeline_events").fetchall()
+    db.close()
+    return render_template('timeline.html', events=events)
 
 @app.route('/gallery')
 def gallery():
-    return render_template('gallery.html', items=gallery_items)
+    db = get_db()
+    items = db.execute("SELECT * FROM gallery_items").fetchall()
+    db.close()
+    return render_template('gallery.html', items=items)
+
+@app.route('/blog')
+def blog():
+    db = get_db()
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+    posts = db.execute(
+        "SELECT * FROM blog_posts ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        (per_page, offset)
+    ).fetchall()
+    total = db.execute("SELECT COUNT(*) as cnt FROM blog_posts").fetchone()['cnt']
+    db.close()
+    return render_template('blog.html', posts=posts, page=page, total=total, per_page=per_page)
+
+@app.route('/blog/<int:post_id>')
+def blog_post(post_id):
+    db = get_db()
+    post = db.execute("SELECT * FROM blog_posts WHERE id = ?", (post_id,)).fetchone()
+    db.close()
+    if not post:
+        return redirect(url_for('blog'))
+    return render_template('blog_post.html', post=post)
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        db = get_db()
+        user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        db.close()
+        if user and check_password_hash(user['password'], password):
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            flash('Вы вошли как администратор.', 'success')
+            return redirect(url_for('admin_panel'))
+        flash('Неверный логин или пароль.', 'error')
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.clear()
+    flash('Вы вышли из панели администратора.', 'info')
+    return redirect(url_for('admin_login'))
+
+@app.route('/admin')
+@login_required
+def admin_panel():
+    db = get_db()
+    post_count = db.execute("SELECT COUNT(*) as cnt FROM blog_posts").fetchone()['cnt']
+    faction_count = db.execute("SELECT COUNT(*) as cnt FROM factions").fetchone()['cnt']
+    char_count = db.execute("SELECT COUNT(*) as cnt FROM characters").fetchone()['cnt']
+    posts = db.execute("SELECT id, title, created_at FROM blog_posts ORDER BY created_at DESC LIMIT 10").fetchall()
+    db.close()
+    return render_template('admin_panel.html', post_count=post_count, faction_count=faction_count, char_count=char_count, posts=posts)
+
+@app.route('/admin/posts/new', methods=['GET', 'POST'])
+@login_required
+def admin_new_post():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        if not title or not content:
+            flash('Заголовок и содержание не могут быть пустыми.', 'error')
+            return render_template('admin_edit_post.html', post=None)
+        db = get_db()
+        db.execute(
+            "INSERT INTO blog_posts (title, content, author) VALUES (?, ?, ?)",
+            (title, content, session.get('admin_username', 'admin'))
+        )
+        db.commit()
+        db.close()
+        flash('Пост опубликован!', 'success')
+        return redirect(url_for('admin_panel'))
+    return render_template('admin_edit_post.html', post=None)
+
+@app.route('/admin/posts/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_edit_post(post_id):
+    db = get_db()
+    post = db.execute("SELECT * FROM blog_posts WHERE id = ?", (post_id,)).fetchone()
+    if not post:
+        db.close()
+        return redirect(url_for('admin_panel'))
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        if not title or not content:
+            flash('Заголовок и содержание не могут быть пустыми.', 'error')
+            return render_template('admin_edit_post.html', post=post)
+        db.execute("UPDATE blog_posts SET title = ?, content = ? WHERE id = ?", (title, content, post_id))
+        db.commit()
+        db.close()
+        flash('Пост обновлён!', 'success')
+        return redirect(url_for('admin_panel'))
+    db.close()
+    return render_template('admin_edit_post.html', post=post)
+
+@app.route('/admin/posts/<int:post_id>/delete', methods=['POST'])
+@login_required
+def admin_delete_post(post_id):
+    db = get_db()
+    db.execute("DELETE FROM blog_posts WHERE id = ?", (post_id,))
+    db.commit()
+    db.close()
+    flash('Пост удалён.', 'info')
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin/posts/generate', methods=['GET', 'POST'])
+@login_required
+def admin_generate_post():
+    topics = get_available_topics()
+    gigachat_connected = is_configured()
+    result = None
+
+    if request.method == 'POST':
+        topic = request.form.get('topic', '').strip()
+        style = request.form.get('style', 'lore')
+        mode = request.form.get('mode', 'gigachat')
+        if not topic:
+            flash('Выберите или укажите тему.', 'error')
+            return render_template('admin_generate.html', topics=topics, result=None, gigachat_connected=gigachat_connected)
+
+        if mode == 'mock':
+            result = generate_mock_post(topic)
+            if result:
+                flash('Пост сгенерирован (эмуляция)!', 'success')
+        else:
+            result = generate_post(topic, style)
+            if result:
+                flash('Пост сгенерирован через GigaChat!', 'success')
+            else:
+                flash('GigaChat недоступен. Используйте эмуляцию.', 'error')
+
+    return render_template('admin_generate.html', topics=topics, result=result, gigachat_connected=gigachat_connected)
+
+@app.route('/admin/posts/generate/save', methods=['POST'])
+@login_required
+def admin_save_generated():
+    title = request.form.get('title', '').strip()
+    content = request.form.get('content', '').strip()
+    if not title or not content:
+        flash('Заголовок и содержание не могут быть пустыми.', 'error')
+        return redirect(url_for('admin_generate_post'))
+    db = get_db()
+    db.execute(
+        "INSERT INTO blog_posts (title, content, author) VALUES (?, ?, ?)",
+        (title, content, session.get('admin_username', 'admin'))
+    )
+    db.commit()
+    db.close()
+    flash('Сгенерированный пост опубликован!', 'success')
+    return redirect(url_for('admin_panel'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

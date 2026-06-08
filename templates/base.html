@@ -6,7 +6,9 @@
     <title>Warhammer 40,000 — Во Вселенной Вечной Войны</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adaptive.css') }}">
 </head>
 <body>
     <canvas id="particleCanvas"></canvas>
@@ -29,6 +31,7 @@
                 <li><a href="/characters" class="nav-link" data-page="characters">Персонажи</a></li>
                 <li><a href="/timeline" class="nav-link" data-page="timeline">Хронология</a></li>
                 <li><a href="/gallery" class="nav-link" data-page="gallery">Галерея</a></li>
+                <li><a href="/blog" class="nav-link" data-page="blog">Блог</a></li>
             </ul>
         </div>
     </nav>

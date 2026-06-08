@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero section admin-page-head page-hero-sml">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Администратор</span>
+            <h1 class="section-title">Вход в панель</h1>
+            <div class="section-divider">✧</div>
+        </div>
+        <div class="reveal login-form-wrap">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-msg">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <form class="form">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" name="username" required class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" required class="form-input">
+                </div>
+                <button type="submit" class="btn btn-primary login-btn">Войти</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

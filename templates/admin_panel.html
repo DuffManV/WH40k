@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero section admin-page-head">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Админ-панель</span>
+            <h1 class="section-title">Управление сайтом</h1>
+            <div class="section-divider">✧</div>
+        </div>
+    </div>
+</section>
+<section class="section admin-body">
+    <div class="container reveal">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-msg">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="admin-stats">
+            <div class="admin-stat">
+                <div class="admin-stat-num">{{ post_count }}</div>
+                <div class="admin-stat-label">Постов</div>
+            </div>
+            <div class="admin-stat">
+                <div class="admin-stat-num">{{ faction_count }}</div>
+                <div class="admin-stat-label">Фракций</div>
+            </div>
+            <div class="admin-stat">
+                <div class="admin-stat-num">{{ char_count }}</div>
+                <div class="admin-stat-label">Персонажей</div>
+            </div>
+        </div>
+        <div class="flex-between mb-20">
+            <h2 class="admin-header-title">Последние посты блога</h2>
+            <div class="flex-row admin-post-actions">
+                <a href="{{ url_for('admin_new_post') }}" class="btn btn-primary btn-sm">+ Новый пост</a>
+                <a href="{{ url_for('admin_generate_post') }}" class="btn btn-secondary btn-sm">🤖 AI генерация</a>
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-danger btn-sm">Выход</a>
+            </div>
+        </div>
+        {% if posts %}
+        {% for post in posts %}
+        <div class="admin-post-item">
+            <div>
+                <a href="{{ url_for('blog_post', post_id=post.id) }}" class="admin-post-title">{{ post.title }}</a>
+                <div class="admin-post-date">{{ post.created_at[:10] }}</div>
+            </div>
+            <div class="admin-post-actions">
+                <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" class="btn btn-ghost btn-xs">Редактировать</a>
+                <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" class="form-inline" onsubmit="return confirm('Удалить пост?')">
+                    <button type="submit" class="btn btn-danger btn-xs">Удалить</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-state-icon">📜</span>
+            <p class="empty-state-text">Постов пока нет.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

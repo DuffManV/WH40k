@@ -235,7 +235,8 @@ function initActiveNavLink() {
         '/factions': 'factions',
         '/characters': 'characters',
         '/timeline': 'timeline',
-        '/gallery': 'gallery'
+        '/gallery': 'gallery',
+        '/blog': 'blog'
     };
 
     const currentPage = pageMap[currentPath] || 'index';

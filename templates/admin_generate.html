@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero section admin-page-head">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-tag">Генерация</span>
+            <h1 class="section-title">AI-генерация поста</h1>
+            <div class="section-divider">✧</div>
+        </div>
+    </div>
+</section>
+<section class="section section-compact">
+    <div class="container reveal content-medium">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-msg">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="admin-card admin-card-mb">
+            <div class="form-group">
+                <label class="form-label">Тема</label>
+                <div class="flex-row mb-12">
+                    <input type="text" name="topic" id="topicInput" placeholder="Или введите свою тему..." list="topicList" class="form-input form-input-dark flex-grow">
+                    <datalist id="topicList">
+                        {% for topic in topics %}
+                        <option value="{{ topic }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="topic-chips">
+                    {% for topic in topics[:8] %}
+                    <span class="topic-chip" onclick="document.getElementById('topicInput').value=this.textContent">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Стиль</label>
+                <select name="style" class="form-input form-input-dark form-select">
+                    <option value="lore">Лор — аналитический обзор</option>
+                    <option value="battle">Битва — военный отчёт</option>
+                    <option value="character">Персонаж — легенда</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" name="mode" value="gigachat" class="btn btn-primary btn-sm">🤖 GigaChat</button>
+                <button type="submit" name="mode" value="mock" class="btn btn-secondary btn-sm">📝 Эмуляция (Mock)</button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-ghost btn-sm">Назад</a>
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="admin-card-accent">
+            <h2 class="admin-header-title result-title">{{ result.title }}</h2>
+            <div class="admin-post-date result-meta">Тема: {{ result.topic }}</div>
+            <div class="post-content result-content">{{ result.content }}</div>
+            <form method="POST" action="{{ url_for('admin_save_generated') }}" class="form-actions">
+                <input type="hidden" name="title" value="{{ result.title }}">
+                <input type="hidden" name="content" value="{{ result.content }}">
+                <button type="submit" class="btn btn-primary btn-sm">Опубликовать</button>
+                <a href="{{ url_for('admin_edit_post', post_id=0) }}" class="btn btn-ghost btn-sm">Редактировать</a>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
