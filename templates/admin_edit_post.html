@@ -18,7 +18,7 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <form class="form">
+        <form method="POST" class="form">
             <div class="form-group">
                 <label class="form-label">Заголовок</label>
                 <input type="text" name="title" value="{{ post.title if post else '' }}" required class="form-input form-title-input">

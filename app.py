@@ -165,7 +165,7 @@ def admin_edit_post(post_id):
         db.commit()
         db.close()
         flash('Пост обновлён!', 'success')
-        return redirect(url_for('admin_panel'))
+        return redirect(url_for('blog_post', post_id=post_id))
     db.close()
     return render_template('admin_edit_post.html', post=post)
 
