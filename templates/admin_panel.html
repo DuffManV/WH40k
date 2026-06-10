@@ -32,7 +32,7 @@
                 <div class="admin-stat-label">Персонажей</div>
             </div>
         </div>
-        <div class="flex-between mb-20">
+        <div class="admin-header flex-between mb-20">
             <h2 class="admin-header-title">Последние посты блога</h2>
             <div class="flex-row admin-post-actions">
                 <a href="{{ url_for('admin_new_post') }}" class="btn btn-primary btn-sm">+ Новый пост</a>
@@ -49,6 +49,11 @@
             </div>
             <div class="admin-post-actions">
                 <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" class="btn btn-ghost btn-xs">Редактировать</a>
+                {% if vk_configured %}
+                <form method="POST" action="{{ url_for('admin_vk_post', post_id=post.id) }}" class="form-inline">
+                    <button type="submit" class="btn btn-secondary btn-xs">Опубликовать в сообществе</button>
+                </form>
+                {% endif %}
                 <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" class="form-inline" onsubmit="return confirm('Удалить пост?')">
                     <button type="submit" class="btn btn-danger btn-xs">Удалить</button>
                 </form>

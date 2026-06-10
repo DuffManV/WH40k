@@ -4,6 +4,7 @@ from functools import wraps
 from werkzeug.security import check_password_hash
 from database import get_db, init_db
 from gigachat_service import generate_post, generate_mock_post, get_available_topics, is_configured
+from vk_service import post_to_vk, is_configured as vk_is_configured
 
 app = Flask(__name__)
 app.secret_key = 'wh40k-secret-key-2026'
@@ -25,7 +26,7 @@ def inject_globals():
         "SELECT id, title, created_at FROM blog_posts ORDER BY created_at DESC LIMIT 5"
     ).fetchall()
     db.close()
-    return {'recent_blog_posts': recent_posts}
+    return {'recent_blog_posts': recent_posts, 'vk_configured': vk_is_configured()}
 
 @app.route('/')
 def index():
@@ -177,6 +178,24 @@ def admin_delete_post(post_id):
     db.close()
     flash('Пост удалён.', 'info')
     return redirect(url_for('admin_panel'))
+
+@app.route('/admin/posts/<int:post_id>/vk', methods=['POST'])
+@login_required
+def admin_vk_post(post_id):
+    db = get_db()
+    post = db.execute("SELECT * FROM blog_posts WHERE id = ?", (post_id,)).fetchone()
+    db.close()
+    if not post:
+        flash('Пост не найден.', 'error')
+        return redirect(url_for('admin_panel'))
+
+    post_url = url_for('blog_post', post_id=post_id, _external=True)
+    result = post_to_vk(post['title'], post['content'], post_url)
+    if result:
+        flash('Пост опубликован в VK!', 'success')
+    else:
+        flash('Ошибка публикации в VK. Проверьте VK_ACCESS_TOKEN и VK_GROUP_ID.', 'error')
+    return redirect(url_for('blog_post', post_id=post_id))
 
 @app.route('/admin/posts/generate', methods=['GET', 'POST'])
 @login_required

@@ -11,17 +11,31 @@
 </section>
 <section class="section section-compact">
     <div class="container reveal content-narrow">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-msg">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
         <div class="post-meta">
             {{ post.created_at[:10] }} • Автор: {{ post.author }}
         </div>
-        <div class="post-content">{{ post.content }}</div>
+        <div id="postContent" class="post-content">{{ post.content }}</div>
         <div class="post-footer">
-            <a href="{{ url_for('blog') }}" class="btn btn-secondary pagination-nav">← Все записи</a>
+            <a href="{{ url_for('blog') }}" class="btn btn-secondary btn-xs pagination-nav">← Все записи</a>
+            <button onclick="copyPost(this)" class="btn btn-ghost btn-xs" data-title="{{ post.title }}">📋 Копировать</button>
             {% if session.get('admin_logged_in') %}
-            <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" class="btn btn-ghost">Редактировать</a>
+            <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" class="btn btn-ghost btn-xs">Редактировать</a>
             <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" class="form-inline" onsubmit="return confirm('Удалить пост?')">
-                <button type="submit" class="btn btn-danger">Удалить</button>
+                <button type="submit" class="btn btn-danger btn-xs">Удалить</button>
             </form>
+            {% if vk_configured %}
+            <form method="POST" action="{{ url_for('admin_vk_post', post_id=post.id) }}" class="form-inline">
+                <button type="submit" class="btn btn-secondary btn-xs">Опубликовать в сообществе</button>
+            </form>
+            {% endif %}
+            
             {% endif %}
         </div>
     </div>

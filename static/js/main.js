@@ -247,3 +247,14 @@ function initActiveNavLink() {
         }
     });
 }
+
+function copyPost(btn) {
+    var title = btn.getAttribute('data-title');
+    var content = document.getElementById('postContent').textContent;
+    var text = title + '\n\n' + content;
+    navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = '✓ Скопировано!';
+        setTimeout(function() { btn.textContent = orig; }, 2000);
+    });
+}

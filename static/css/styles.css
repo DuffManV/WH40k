@@ -11,6 +11,7 @@
 .flex-gap-lg { gap: 25px; }
 
 .admin-page-head { min-height: auto; padding-bottom: 0; }
+.admin-header { padding: 0 24px; }
 .admin-body { padding-top: 40px; }
 .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
 .admin-stat { background: var(--bg-card); border: 1px solid var(--border); padding: 30px; text-align: center; }
@@ -66,7 +67,7 @@
 .empty-state-text { color: var(--text-dim); font-size: 1.1rem; }
 
 .post-content { color: var(--text); line-height: 2; font-size: 1.1rem; white-space: pre-wrap; }
-.post-footer { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.post-footer { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .post-meta { font-size: 0.85rem; color: var(--gold-dark); margin-bottom: 30px; letter-spacing: 1px; }
 
 .login-form-wrap { max-width: 400px; margin: 0 auto; }
